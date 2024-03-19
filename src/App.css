@@ -37,8 +37,9 @@ input {
     height: 30px;
     padding: 8px;
     border: 2px solid black;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    font-family: "Poppins", sans-serif;
     background-color: rgb(71, 71, 210);
     color: #ffff;
     margin: 10px;
@@ -52,7 +53,7 @@ input {
 .error {
     font-family: "Poppins", sans-serif;
     text-align: center;
-    font-size: 15px;
+    font-size: 30px;
 }
 
 .success {
@@ -67,6 +68,7 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 10px;
 }
 
 button {
@@ -74,10 +76,16 @@ button {
     height: 35px;
     padding: 5px;
     border: 2px solid black;
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     background-color: rgb(71, 71, 210);
     color: #ffff;
     margin: 10px;
     cursor: pointer;
+    font-family: "Poppins", sans-serif;
+}
+
+button:hover {
+    background-color: rgb(36, 36, 212);
+    transition: all 0.2s ease-in;
 }
