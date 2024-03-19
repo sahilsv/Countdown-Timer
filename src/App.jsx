@@ -3,7 +3,10 @@ import CountdownItem from "./components/CountdownItem/CountdownItem";
 import "./App.css";
 
 const App = () => {
-  const [targetDate, setTargetDate] = useState(null);
+  const [targetDate, setTargetDate] = useState(() => {
+    const storedTargetDate = localStorage.getItem("targetDate");
+    return storedTargetDate ? new Date(storedTargetDate) : null;
+  });
   const [timerStarted, setTimerStarted] = useState(false);
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -17,7 +20,7 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(e.target.elements.targetDateTime.value);
+
     const selectedDateTime = new Date(dateInputRef.current.value);
     const currentDateTime = new Date();
     const timeDifference = selectedDateTime.getTime() - currentDateTime.getTime();
@@ -34,6 +37,7 @@ const App = () => {
       setTargetDate(selectedDateTime);
       setSuccess(false);
       setTimerStarted(true);
+      localStorage.setItem("targetDate", selectedDateTime.toISOString());
     }
   };
 
@@ -47,6 +51,7 @@ const App = () => {
           setSuccess(true);
           clearInterval(interval);
           setTimerStarted(false);
+          localStorage.removeItem("targetDate");
         } else {
           setCountdown(calculateCountdown(timeDiff));
         }
@@ -72,6 +77,7 @@ const App = () => {
     setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     setError("");
     setSuccess(false);
+    localStorage.removeItem("targetDate");
   };
 
   const resetTimer = () => {
@@ -81,11 +87,8 @@ const App = () => {
     setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     setError("");
     setSuccess(false);
+    localStorage.removeItem("targetDate");
   }
-
-  // const handleOnChange = (e) => {
-  //   setTargetDate(e.target.value);
-  // };
 
   return (
     <div className="App">
@@ -95,11 +98,9 @@ const App = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="datetime-local"
-          // value={targetDate}
           name="targetDateTime"
           // max={moment().add(99, "days").format("YYYY-MM-DDTHH:mm")}
           ref={dateInputRef}
-          // onChange={handleOnChange}
         />
         <button
           type="button"
