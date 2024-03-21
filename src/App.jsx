@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import CountdownItem from "./components/CountdownItem/CountdownItem";
+import sound from "./assets/tune.mp3";
 import "./App.css";
 
 const App = () => {
@@ -17,16 +18,18 @@ const App = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const dateInputRef = useRef(null);
+  const audioRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const selectedDateTime = new Date(dateInputRef.current.value);
     const currentDateTime = new Date();
-    const timeDifference = selectedDateTime.getTime() - currentDateTime.getTime();
+    const timeDifference =
+      selectedDateTime.getTime() - currentDateTime.getTime();
 
-    // 100 days in milliseconds is 8640000000
-    if (timeDifference >= 8640000000) {
+    const maxDaysValue = 1000 * 60 * 60 * 24 * 100;
+    if (timeDifference >= maxDaysValue) {
       setError("Selected time is more than 100 days");
       setTargetDate(null);
     } else if (timeDifference < 0) {
@@ -49,6 +52,8 @@ const App = () => {
 
         if (timeDiff <= 0) {
           setSuccess(true);
+          // const audio = new Audio(sound);
+          // audio.play();
           clearInterval(interval);
           setTimerStarted(false);
           localStorage.removeItem("targetDate");
@@ -60,6 +65,12 @@ const App = () => {
 
     return () => clearInterval(interval);
   }, [targetDate]);
+
+  useEffect(() => {
+    if (success && audioRef.current) {
+      audioRef.current.play();
+    }
+  }, [success]);
 
   const calculateCountdown = (time) => {
     const days = Math.floor(time / (1000 * 60 * 60 * 24));
@@ -73,7 +84,7 @@ const App = () => {
   const cancelTimer = () => {
     setTargetDate(null);
     setTimerStarted(false);
-    dateInputRef.current.value = '';
+    dateInputRef.current.value = "";
     setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     setError("");
     setSuccess(false);
@@ -82,13 +93,13 @@ const App = () => {
 
   const resetTimer = () => {
     setTargetDate(null);
-    dateInputRef.current.value = '';
+    dateInputRef.current.value = "";
     setTimerStarted(false);
     setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     setError("");
     setSuccess(false);
     localStorage.removeItem("targetDate");
-  }
+  };
 
   return (
     <div className="App">
@@ -99,7 +110,6 @@ const App = () => {
         <input
           type="datetime-local"
           name="targetDateTime"
-          // max={moment().add(99, "days").format("YYYY-MM-DDTHH:mm")}
           ref={dateInputRef}
         />
         <button
@@ -108,11 +118,13 @@ const App = () => {
         >
           {timerStarted ? "Cancel Timer" : "Start Timer"}
         </button>
-        <button type="button" onClick={resetTimer}>Reset Timer</button>
+        <button type="button" onClick={resetTimer}>
+          Reset Timer
+        </button>
       </form>
 
       {error && <p className="error">{error}</p>}
-      
+
       <div className="countdown">
         <CountdownItem label="Days" value={countdown.days} />
         <CountdownItem label="Hours" value={countdown.hours} />
@@ -120,9 +132,12 @@ const App = () => {
         <CountdownItem label="Seconds" value={countdown.seconds} />
       </div>
       {success && (
-        <p className="success">
-          🎉 The countdown is over! What{"'"}s next on your adventure? 🎉
-        </p>
+        <>
+          <audio src={sound} ref={audioRef} />
+          <p className="success">
+            🎉 The countdown is over! What{"'"}s next on your adventure? 🎉
+          </p>
+        </>
       )}
     </div>
   );
